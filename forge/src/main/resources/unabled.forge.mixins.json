@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.lozangocomz.unabled.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "MixinForgeBlock"
+  ],
+  "client": [],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

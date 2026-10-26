@@ -1,0 +1,33 @@
+package net.lozangocomz.unabled.mixin;
+
+import net.lozangocomz.unabled.NoDropTracker;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+/** Forge routes player mining through its dropXp overload of Block.dropResources. */
+@Mixin(Block.class)
+public abstract class MixinForgeBlock {
+    @Inject(
+            method = "dropResources(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/entity/BlockEntity;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/item/ItemStack;Z)V",
+            at = @At("HEAD"),
+            cancellable = true,
+            remap = false
+    )
+    private static void unabled$preventForgeDrops(BlockState state, Level level, BlockPos pos,
+                                                      BlockEntity blockEntity, Entity entity, ItemStack tool,
+                                                      boolean dropXp, CallbackInfo callback) {
+        if (entity instanceof Player player && NoDropTracker.consume(player, pos)) {
+            callback.cancel();
+        }
+    }
+}
